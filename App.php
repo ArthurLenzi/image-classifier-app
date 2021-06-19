@@ -51,7 +51,7 @@ class App
                 $version = json_decode(file_get_contents($this->dir . DIRECTORY_SEPARATOR . 'composer.json'));
                 $view->getEnvironment()->addGlobal("session", $_SESSION);
                 $view->getEnvironment()->addGlobal("version", $version->version);
-                
+ 
                 return $view;
             };
         }

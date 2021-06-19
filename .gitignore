@@ -10,3 +10,6 @@ composer.phar
 phpunit.report.xml
 phpunit.coverage.xml
 .phpunit.result.cache
+/unprocessed_images/*
+/processed_images/*
+/uploads/*

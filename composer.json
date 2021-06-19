@@ -1,24 +1,12 @@
 {
-    "name": "djamp/djamp",
-    "description": "framework MVC baseado no SlimFramework",
+    "name": "arthur/image_app",
+    "description": "Aplicação para classificar imagem",
     "type": "project",
+    "version": 0.1,
     "authors": [
         {
-            "name": "Moisés Dandico",
-            "email": "moises.dandico@gmail.com"
-        },
-        {
-            "name": "Pedro Henrique"
-        },
-        {
-            "name": "João Vitor Lima"
-        },
-        {
-            "name": "Arthur Lenzi"
-        },
-        {
-            "name": "Daniel Pereira",
-            "email": "dani.pereira47@gmail.com"
+            "name": "Arthur Lenzi",
+            "email": "arthurlenzi@gmail.com"
         }
     ],
     "require": {
@@ -46,4 +34,5 @@
         }
     },
     "license": "MIT"
+    
 }
