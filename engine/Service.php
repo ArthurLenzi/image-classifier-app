@@ -12,6 +12,8 @@ abstract class Service
     public function __construct()
     {
         $this->dir = str_replace("engine", "", __DIR__);
+        $this->configDir = $this->dir . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
+        $this->config = parse_ini_file($this->configDir . 'config.ini', true);
         $this->validator = new \lib\Validator();
     }
 

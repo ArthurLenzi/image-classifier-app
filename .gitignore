@@ -6,7 +6,11 @@ composer.phar
 # composer.lock
 .vscode/launch.json
 /config/database.ini
+/config/config.ini
 /config/cookies.ini
 phpunit.report.xml
 phpunit.coverage.xml
 .phpunit.result.cache
+/unprocessed_images/*
+/processed_images/*
+/uploads/*

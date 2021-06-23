@@ -15,7 +15,7 @@ abstract class Controller
     protected $state;
     protected $config;
     protected $validator;
-    
+
     public function __construct(ContainerInterface $container)
     {
         $this->dir = str_replace("engine", "", __DIR__);

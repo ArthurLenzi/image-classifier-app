@@ -1,19 +1,12 @@
 <?php
 
-use Controller\{FormularioController, AuthController, LogController, ExamplesController};
-
+use Controller\{ImageController, AuthController, LogController, UserController};
 
 $app->group('', function ($app) {
-    $app->get('/', FormularioController::class . ':showFormulario');
-    $app->post('/formulario', FormularioController::class . ':postDadosFormulario');
-    $app->get('/formulario', FormularioController::class . ':showFormulario');
-    $app->get('/examples/insert', ExamplesController::class . ':insertMySql');
-    $app->get('/examples/select', ExamplesController::class . ':selectMySql');
-    $app->get('/examples/update', ExamplesController::class . ':updateMySql');
-    $app->get('/examples/delete', ExamplesController::class . ':deleteMySql');
-    $app->get('/examples/paginate', ExamplesController::class . ':examplePaginate');
-    $app->get('/examples/validate', ExamplesController::class . ':exampleValidate');
-    
-});
+    $app->get('/image', ImageController::class . ':getImage');
+    $app->post('/createUser', UserController::class . ':createUser');
+})->add(AuthController::class . ':authWithJWT');
+
+$app->post('/login', AuthController::class . ':login');
 
 #TODO Middleware de Log deve ser adicionada antes da Middleware de Auth
