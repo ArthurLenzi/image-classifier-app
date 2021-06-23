@@ -46,7 +46,7 @@ class MyPDO extends \PDO
     # Added to provide support for postgres
     protected $is_postgres;
 
-    protected $envState;
+    protected $env_state;
     protected $config;
 
 
@@ -58,10 +58,10 @@ class MyPDO extends \PDO
      * @param string $password - database password
      * @param array $options - associative array of connection options
      */
-    public function __construct($dsn, $user, $password, $envState, $type, $config, $options = array())
+    public function __construct($dsn, $user, $password, $env_state, $type, $config, $options = array())
     {
         // set server environment constants
-        $this->envState = $envState;
+        $this->env_state = $env_state;
         $this->config = $config;
         
         # If it's a postgres db, some functions use different queries
@@ -112,8 +112,8 @@ class MyPDO extends \PDO
         }
         $error['File'] = $e->getFile() . ' @ line ' . $e->getLine();
 
-        $error = PDOHelper::gatherDebugSqlParms($this->sql, $this->bindings, $error, $backtrace, $this->envState);
-        PDOHelper::displayDebugMessage($error, $this->envState);
+        $error = PDOHelper::gatherDebugSqlParms($this->sql, $this->bindings, $error, $backtrace, $this->env_state);
+        PDOHelper::displayDebugMessage($error, $this->env_state);
 
         // don't execute default PHP error handler
         return true;
@@ -274,8 +274,8 @@ class MyPDO extends \PDO
     public function buildSQL($sql, $table, $values, $bindings = array())
     {
         // filter values for table
-        $filteredValues = $this->filter($values, $table);
-        if ($values && !$filteredValues) {
+        $filtered_values = $this->filter($values, $table);
+        if ($values && !$filtered_values) {
             throw new \PDOException('Where arguments do not exist in the table');
         } else {
             $markersResult = PDOHelper::addMarkers($sql, $values, $bindings);
@@ -479,30 +479,30 @@ class MyPDO extends \PDO
         $values = $this->filter($values, $table);  # Commented because functions to get table columns not working
 
         // Build the SQL:
-        $insertSql = PDOHelper::buildInsertQuery($table, $values);
+        $insert_sql = PDOHelper::buildInsertQuery($table, $values);
 
         // add values
         $i = 0;
         if (empty($bindings)) {
             $bindings = array_values($values);
             foreach ($values as $value) {
-                $insertSql .= ($i == 0) ? '?' : ', ?';
+                $insert_sql .= ($i == 0) ? '?' : ', ?';
                 $i++;
             }
         } else {
             foreach ($values as $value) {
-                $insertSql .= ($i == 0) ? $value : ', ' . $value;
+                $insert_sql .= ($i == 0) ? $value : ', ' . $value;
                 $i++;
             }
         }
-        $insertSql .= ')';
+        $insert_sql .= ')';
 
         if ($this->is_postgres) {
-            $insertSql .= " RETURNING *";
+            $insert_sql .= " RETURNING *";
         }
 
         // run the query
-        return $this->run($insertSql, $table, $bindings);
+        return $this->run($insert_sql, $table, $bindings);
     }
 
     /**

@@ -10,19 +10,19 @@ abstract class Model
 {
     protected $databases;
     protected $config;
-    protected $envState;
+    protected $env_state;
     protected $container;
     protected $validator;
-    private $errorMessage;
+    private $error_message;
     protected $dir;
-    protected $configDir;
+    protected $config_dir;
 
     public function __construct()
     {
         $this->dir = str_replace("engine", "", __DIR__);
-        $this->configDir = $this->dir . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
-        $this->databases = parse_ini_file($this->configDir . 'database.ini', true);
-        $this->config = parse_ini_file($this->configDir . 'config.ini', true);
+        $this->config_dir = $this->dir . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
+        $this->databases = parse_ini_file($this->config_dir . 'database.ini', true);
+        $this->config = parse_ini_file($this->config_dir . 'config.ini', true);
         $this->container = array();
         $this->validator = new Validator();
         $this->setEnvState();
@@ -42,16 +42,16 @@ abstract class Model
         } else {
             $urlEnvParameter = 'default';
         }
-        $this->envState = array_search($urlEnvParameter, $this->states);
-        if (!$this->envState) {
-            $this->envState = $urlEnvParameter; # Expected to be default
+        $this->env_state = array_search($urlEnvParameter, $this->states);
+        if (!$this->env_state) {
+            $this->env_state = $urlEnvParameter; # Expected to be default
         }
     }
 
     public function getServerApi()
     {
         $availableApis = parse_ini_file($this->dir . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'api.ini', true);
-        $apiInfo = $availableApis[$this->envState];
+        $apiInfo = $availableApis[$this->env_state];
         $api = $apiInfo['host'];
         if ($apiInfo['port']) {
             $api .= ':' . $apiInfo['port'];
@@ -77,16 +77,16 @@ abstract class Model
             || !is_string($url)
             || !preg_match('/((http|https)\:\/\/)?[a-zA-Z0-9\.\/\?\:@\-_=#]+\.([a-zA-Z0-9\&\.\/\?\:@\-_=#])*/', $url)
         ) {
-            $this->errorMessage = "Url inválida";
-            $this->handleError(1, $this->errorMessage);
+            $this->error_message = "Url inválida";
+            $this->handleError(1, $this->error_message);
         }
 
         // Checa se há a necessidade de adição de queries
         if (isset($parameters) && !empty($parameters)) {
             # Add get parameters to the url
-            $parametersStr = http_build_query($parameters);
-            if ($parametersStr) {
-                $url .= "?" . $parametersStr;
+            $parameters_str = http_build_query($parameters);
+            if ($parameters_str) {
+                $url .= "?" . $parameters_str;
             }
         }
 
@@ -100,12 +100,12 @@ abstract class Model
 
         // Busca dados da requisição curl
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
-        $body = substr($result, $headerSize);
+        $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+        $body = substr($result, $header_size);
         
         curl_close($curl);
 
-        return array("data" => $body, "http_code" => $httpcode, "header_size" => $headerSize, 'result' => $result);
+        return array("data" => $body, "http_code" => $httpcode, "header_size" => $header_size, 'result' => $result);
     }
 
     /**
@@ -123,8 +123,8 @@ abstract class Model
             || !is_string($url)
             || !preg_match('/((http|https)\:\/\/)?[a-zA-Z0-9\.\/\?\:@\-_=#]+\.([a-zA-Z0-9\&\.\/\?\:@\-_=#])*/', $url)
         ) {
-            $this->errorMessage = "Url inválida";
-            $this->handleError(1, $this->errorMessage);
+            $this->error_message = "Url inválida";
+            $this->handleError(1, $this->error_message);
         }
 
         $ch = curl_init();
@@ -143,14 +143,14 @@ abstract class Model
     /**
      * Retorna somente os elementos permitidos em uma lista
      *
-     * @param array $myArray - lista a ser filtrada
+     * @param array $my_array - lista a ser filtrada
      * @param array $allowed - chaves permitidas
      * @return array - lista filtrada
      */
-    public function filterAllowedArrayKeys($myArray, $allowed)
+    public function filterAllowedArrayKeys($my_array, $allowed)
     {
         $filtered = array_filter(
-            $myArray,
+            $my_array,
             function ($key) use ($allowed) {
                 return in_array($key, $allowed);
             },
@@ -189,7 +189,7 @@ abstract class Model
         $data = array('date' => $date);
         $rules = array('date' => 'date_format:Y-m-d');
         if (!$this->validator->validate($data, $rules)['valid']) {
-            $this->handleError(1, $this->errorMessage);
+            $this->handleError(1, $this->error_message);
         } else {
             $dt = new \DateTime();
             $date = $dt->createFromFormat('Y-m-d', $date);
@@ -199,18 +199,18 @@ abstract class Model
 
     public function setDate($dados, $key)
     {
-        $this->errorMessage = 'Formato de data inválido';
+        $this->error_message = 'Formato de data inválido';
         if (!isset($dados[$key]) || !is_string($dados[$key])) {
-            $this->handleError(1, $this->errorMessage);
+            $this->handleError(1, $this->error_message);
         }
         return $this->returnDate($dados[$key]);
     }
 
     public function setTimeStamp($dados, $key)
     {
-        $this->errorMessage = 'Formato de data inválido';
+        $this->error_message = 'Formato de data inválido';
         if (!isset($dados[$key]) || !is_int($dados[$key])) {
-            $this->handleError(1, $this->errorMessage);
+            $this->handleError(1, $this->error_message);
         }
         return $this->returnDate($dados[$key]);
     }
@@ -218,16 +218,16 @@ abstract class Model
     /**
      * Lida com os erros, printando somente caso não esteja em ambiente de produção
      *
-     * @param integer $errorClass - tipo do erro
+     * @param integer $error_class - tipo do erro
      * Valores aceitos:
      *      1 - UnexpectedValueException
      * @param string $message - message to be printed
      * @return
      */
-    public function handleError($errorClass, $message)
+    public function handleError($error_class, $message)
     {
-        if ($this->envState == 'default') {
-            if ($errorClass == 1) {
+        if ($this->env_state == 'default') {
+            if ($error_class == 1) {
                 throw new \UnexpectedValueException($message);
             } else {
                 throw new \Exception($message);
@@ -258,14 +258,14 @@ abstract class Model
 
     public function openConnect($database)
     {
-        $dbData = $this->databases[$this->envState . '_' . $database];
+        $db_data = $this->databases[$this->env_state . '_' . $database];
 
-        $dsn = $dbData['type'] . ':host=' . $dbData['host'] . ';port=' . $dbData['port'];
-        $dsn .= ';dbname=' . $dbData['dbname'];
-        $user = $dbData['user'];
-        $pass = $dbData['password'];
+        $dsn = $db_data['type'] . ':host=' . $db_data['host'] . ';port=' . $db_data['port'];
+        $dsn .= ';dbname=' . $db_data['dbname'];
+        $user = $db_data['user'];
+        $pass = $db_data['password'];
 
-        return new PDOHelper($dsn, $user, $pass, $this->envState, $dbData['type'], $this->config, []);
+        return new PDOHelper($dsn, $user, $pass, $this->env_state, $db_data['type'], $this->config, []);
     }
 
     /**

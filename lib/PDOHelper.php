@@ -4,7 +4,7 @@ namespace lib;
 
 class PDOHelper extends MyPDO
 {
-    public static function displayDebugMessage($error, $envState)
+    public static function displayDebugMessage($error, $env_state)
     {
         // get css
         $css = '';
@@ -24,33 +24,33 @@ class PDOHelper extends MyPDO
         }
         $msg .= "\n" . '</div>';
         // customize error handling based on environment:
-        if ($envState == 'default') {  # Em produção
+        if ($env_state == 'default') {  # Em produção
             echo $msg;
         } else {
             echo $msg;
         }
     }
 
-    public static function gatherDebugSqlParms($sql, $bindings, $error, $backtrace, $envState)
+    public static function gatherDebugSqlParms($sql, $bindings, $error, $backtrace, $env_state)
     {
         // gather SQL params
         if (!empty($sql)) {
             $error['SQL statement'] = $sql;
         }
-        $openPre = '<pre>';
+        $open_pre = '<pre>';
         $close_pre = '</pre>';
         if (!empty($bindings)) {
-            $error['Bind Parameters'] = $openPre . print_r($bindings, true) . $close_pre;
+            $error['Bind Parameters'] = $open_pre . print_r($bindings, true) . $close_pre;
         }
         // show args if set
         if (!empty($backtrace[1]['args'])) {
-            $error['Args'] = $openPre . print_r($backtrace[1]['args'], true) . $close_pre;
+            $error['Args'] = $open_pre . print_r($backtrace[1]['args'], true) . $close_pre;
         }
         // don't show variables if GLOBALS are set
         if (!empty($context) && empty($context['GLOBALS'])) {
-            $error['Current Variables'] = $openPre . print_r($context, true) . $close_pre;
+            $error['Current Variables'] = $open_pre . print_r($context, true) . $close_pre;
         }
-        $error['Environment'] = $envState;
+        $error['Environment'] = $env_state;
 
         return $error;
     }
@@ -126,9 +126,9 @@ class PDOHelper extends MyPDO
         $i = 0;
         foreach ($values as $column => $value) {
             // get the binding
-            $bindingResult = PDOHelper::getMarkerBiding($value, $column, $bindings);
-            $marker = $bindingResult[0];
-            $bound_value = $bindingResult[1];
+            $binding_result = PDOHelper::getMarkerBiding($value, $column, $bindings);
+            $marker = $binding_result[0];
+            $bound_value = $binding_result[1];
 
             // add the binding
             $markers_bindings[$marker] = $bound_value;
@@ -201,13 +201,13 @@ class PDOHelper extends MyPDO
 
     public static function getIdValues($is_postgres)
     {
-        $idVariable = "extra";
+        $id_variable = "extra";
         $column_name = "Field";
         if ($is_postgres) {
             $column_name = "column_name";
-            $idVariable = "identity_increment";
+            $id_variable = "identity_increment";
         }
-        return array($idVariable,$column_name);
+        return array($id_variable,$column_name);
     }
 
     public static function compileColumnNames($info, $is_postgres)
@@ -237,12 +237,12 @@ class PDOHelper extends MyPDO
     public static function removeAiFields($info, $values, $is_postgres)
     {
         $variables_names = PDOHelper::getIdValues($is_postgres);
-        $idVariable = $variables_names[0];
+        $id_variable = $variables_names[0];
         $column_name = $variables_names[1];
 
         $ai_fields = array(); // auto-increment fields
         foreach ($info as $item) {
-            if (isset($item[$idVariable]) && $item[$idVariable] != null) {
+            if (isset($item[$id_variable]) && $item[$id_variable] != null) {
                 $ai_fields[] = $item[$column_name];
             }
         }

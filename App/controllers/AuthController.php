@@ -4,37 +4,70 @@ namespace Controller;
 
 class AuthController extends \Engine\Controller
 {
-    public function authWithJWT($request, $response, $next)
+    //Confere se existe sessão
+    //Precisa ser modificada para checar varieveis de sessão, já que é iniciada sessões em outras paginas;
+    //Usar sessão para o sistema talves só seja possivel após a total migração, pois não é possivel deslogar apenas do nosso módulo.
+    public function checkSession()
     {
-        $request = $request->withAttribute('JWT', 'false');
-        $request = $request->withAttribute('JWT_data', '');
-
-        if (!$request->hasHeader('HTTP_AUTHORIZATION')) {
-            return $response->withJSON(array("Erro" => 'HTTP_AUTHORIZATION is missing'));
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            return false;
         }
-
-        try {
-            $authService = $this->loadService('Auth');
-            $decoded = $authService->decodeJWT($request->getHeaderLine('HTTP_AUTHORIZATION'));
-            // stdClass to array
-            $decoded = json_decode(json_encode($decoded), true);
-
-            $request = $request->withAttribute('JWT', 'true');
-            $request = $request->withAttribute('JWT_data', $decoded['JWT_data']);
-        } catch (\Throwable $th) {
-            return $response->withJSON(array("Erro" => $th->getMessage()));
-        }
-        return $next($request, $response);
+        return true;
     }
 
-    public function login($request, $response, $next)
+    //Passa os cookies para varieveis de sessão
+    public function parseCookie($all = false, array $cookies = [])
     {
-        try {
-            $authService = $this->loadService('Auth');
-            $body = $request->getParsedBody();
-            return $response->withJSON($authService->login($body));
-        } catch (CustomException | Exception $e) {
-            return $response->withJson($e->getCompleteExceptionMessage(), $e->getCode());
+        if ($all) {
+            foreach ($_COOKIE as $key => $val) {
+                $_SESSION[$key] = $val;
+            }
+        } else {
+            foreach ($cookies as $key => $val) {
+                if (isset($_COOKIE[$val])) {
+                    $_SESSION[$val] = $_COOKIE[$val];
+                }
+            }
         }
+    }
+
+    //Confere se os cookies existem;
+    public function checkCookie(array $cookies)
+    {
+        foreach ($cookies as $key => $val) {
+            if (!isset($_COOKIE[$val])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    //ignorar até a versão final
+    public function authMiddleware($request, $response, $next)
+    {
+        if (!$this->checkSession()) {
+            //podemos puxar os cookies que serão checados de algum arquivo de configuração
+            if (!$this->checkCookie([])) {
+                return $this->view->render($response->withStatus(403), 'error/unauth.html');
+            } else {
+                if (!isset($_SESSION)) {
+                    session_start();
+                }
+                $this->parseCookie($all = true);
+            }
+        }
+        
+        $response = $next($request, $response);
+        return $response;
+    }
+
+    //autentica apenas com os cookies fornecidos em /config/cookies.ini
+    public function authWithCookie($request, $response, $next)
+    {
+        if (!$this->checkCookie(parse_ini_file("../config/cookies.ini"))) {
+            return $this->view->render($response->withStatus(403), 'error/unauth.html');
+        }
+        
+        return $next($request, $response);
     }
 }
