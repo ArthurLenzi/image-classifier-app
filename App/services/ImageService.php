@@ -36,7 +36,7 @@ class ImageService extends \Engine\Service
         $extention = end($imageNameArray);
 
         if (!file_exists($this->dir . "unprocessed_images" . DIRECTORY_SEPARATOR . $imageName) && !$ignoreError) {
-            throw new CustomException("Essa imagem não existe", 422);
+            throw new CustomException("There is no image with this name.", 422);
         } elseif (!file_exists($this->dir . "unprocessed_images" . DIRECTORY_SEPARATOR . $imageName)) {
             return false;
         }

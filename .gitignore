@@ -6,6 +6,7 @@ composer.phar
 # composer.lock
 .vscode/launch.json
 /config/database.ini
+/config/config.ini
 /config/cookies.ini
 phpunit.report.xml
 phpunit.coverage.xml
