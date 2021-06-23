@@ -2,6 +2,8 @@
 
 namespace Djamp;
 
+include __DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'constants.php';
+
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
@@ -48,9 +50,9 @@ class App
                 $serverInfo = $_SERVER;
                 $uri = \Slim\Http\Uri::createFromEnvironment(new \Slim\Http\Environment($serverInfo));
                 $view->addExtension(new \Slim\Views\TwigExtension($router, $uri));
-                $version = json_decode(file_get_contents($this->dir . DIRECTORY_SEPARATOR . 'composer.json'));
+                //$version = json_decode(file_get_contents($this->dir . DIRECTORY_SEPARATOR . 'composer.json'));
                 $view->getEnvironment()->addGlobal("session", $_SESSION);
-                $view->getEnvironment()->addGlobal("version", $version->version);
+                //$view->getEnvironment()->addGlobal("version", $version->version);
  
                 return $view;
             };
