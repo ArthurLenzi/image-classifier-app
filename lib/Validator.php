@@ -70,8 +70,8 @@ class Validator
                 $value = null;
             }
             
-            $separetedRules = explode("|", $field_rules);
-            foreach ($separetedRules as $rule) {
+            $separeted_rules = explode("|", $field_rules);
+            foreach ($separeted_rules as $rule) {
                 // Does not validate subsequent rules if field is optional (and is not set) or nullable (and equal to null)
                 if (($rule === 'optional' && !array_key_exists($field, $data)) || ($rule === 'nullable' && $value === null)) {
                     break;
@@ -214,8 +214,8 @@ class Validator
 
     public function validateDigitsBetween($rule, $value, $field)
     {
-        $minMax = explode(":", $rule)[1];
-        $split = explode(",", $minMax);
+        $min_max = explode(":", $rule)[1];
+        $split = explode(",", $min_max);
         $min = $split[0];
         $max = $split[1];
         $length = strlen((string)$value);
@@ -229,8 +229,8 @@ class Validator
 
     public function validateBetween($rule, $value, $field)
     {
-        $minMax = explode(":", $rule)[1];
-        $split = explode(",", $minMax);
+        $min_max = explode(":", $rule)[1];
+        $split = explode(",", $min_max);
         $min = $split[0];
         $max = $split[1];
 
@@ -387,10 +387,10 @@ class Validator
 
     public function validateNotIn($rule, $value, $field)
     {
-        $notAllowedValues = explode(":", $rule)[1];
-        $notAllowedValues = explode(",", $notAllowedValues);
+        $not_allowed_values = explode(":", $rule)[1];
+        $not_allowed_values = explode(",", $not_allowed_values);
 
-        if (in_array($value, $notAllowedValues)) {
+        if (in_array($value, $not_allowed_values)) {
             $errMessage = "O campo " . $field . " não está contido nos valores aceitos.";
             return array("valid" => false, "invalid_message" => $errMessage);
         }
@@ -411,11 +411,11 @@ class Validator
 
     public function validateDateEquals($rule, $value, $field)
     {
-        $givenDate = explode(":", $rule)[1];
+        $given_date = explode(":", $rule)[1];
         $value = strtotime($value);
-        $givenDate = strtotime($givenDate);
+        $given_date = strtotime($given_date);
 
-        if (!($value && $givenDate && $value == $givenDate)) {
+        if (!($value && $given_date && $value == $given_date)) {
             $errMessage = "Field " . $field . " value not equal given date";
             return array("valid" => false, "invalid_message" => $errMessage);
         }
@@ -424,11 +424,11 @@ class Validator
 
     public function validateAfterDate($rule, $value, $field)
     {
-        $givenDate = explode(":", $rule)[1];
-        $givenDate = strtotime($givenDate);
+        $given_date = explode(":", $rule)[1];
+        $given_date = strtotime($given_date);
         $value = strtotime($value);
 
-        if (!($value && $givenDate && $value > $givenDate)) {
+        if (!($value && $given_date && $value > $given_date)) {
             $errMessage = "Field " . $field . " value not after given date";
             return array("valid" => false, "invalid_message" => $errMessage);
         }
@@ -437,10 +437,10 @@ class Validator
 
     public function validateAfterOrEqualDate($rule, $value, $field)
     {
-        $givenDate = explode(":", $rule)[1];
-        $givenDate = strtotime($givenDate);
+        $given_date = explode(":", $rule)[1];
+        $given_date = strtotime($given_date);
         $value = strtotime($value);
-        if (! ($value && $givenDate && $value >= $givenDate)) {
+        if (! ($value && $given_date && $value >= $given_date)) {
             $errMessage = "Field " . $field . " value not after or equal given date";
             return array("valid" => false, "invalid_message" => $errMessage);
         }
@@ -450,11 +450,11 @@ class Validator
 
     public function validateBeforeDate($rule, $value, $field)
     {
-        $givenDate = explode(":", $rule)[1];
-        $givenDate = strtotime($givenDate);
+        $given_date = explode(":", $rule)[1];
+        $given_date = strtotime($given_date);
         $value = strtotime($value);
 
-        if (!($value && $givenDate && $value < $givenDate)) {
+        if (!($value && $given_date && $value < $given_date)) {
             $errMessage = "Field " . $field . " value not before given date";
             return array("valid" => false, "invalid_message" => $errMessage);
         }
@@ -463,11 +463,11 @@ class Validator
 
     public function validateBeforeOrEqualDate($rule, $value, $field)
     {
-        $givenDate = explode(":", $rule)[1];
-        $givenDate = strtotime($givenDate);
+        $given_date = explode(":", $rule)[1];
+        $given_date = strtotime($given_date);
         $value = strtotime($value);
 
-        if (!($value && $givenDate && $value <= $givenDate)) {
+        if (!($value && $given_date && $value <= $given_date)) {
             $errMessage = "Field " . $field . " value not before or equal given date";
             return array("valid" => false, "invalid_message" => $errMessage);
         }
