@@ -22,4 +22,10 @@ abstract class Service
         $class = '\\models\\' . $model . 'Model';
         return new $class();
     }
+
+    public function loadService($service)
+    {
+        $class = '\\services\\' . $service . 'Service';
+        return new $class($this->container);
+    }
 }

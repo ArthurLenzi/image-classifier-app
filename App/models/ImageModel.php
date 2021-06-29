@@ -24,11 +24,25 @@ class ImageModel extends \Engine\Model
         return $this->container['db']->select($sqlQuery, $bindings);
     }
 
+    public function getRandomImage($role)
+    {
+        $sqlQuery = "SELECT I.hash FROM image_app.image I
+        WHERE I.role = :role
+        ORDER BY RANDOM()
+        LIMIT 1";
+
+        $bindings = array(
+            ":role" => $role
+        );
+
+        return $this->container['db']->select($sqlQuery, $bindings);
+    }
+
     public function saveImage($hash, $imageRole)
     {
         $insertValues = array (
             'hash' => $hash,
-            'hole' => $imageRole
+            'role' => $imageRole
         );
 
         return $this->container['db']->insert('image_app.image', $insertValues);

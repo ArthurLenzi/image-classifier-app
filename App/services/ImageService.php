@@ -8,10 +8,50 @@ class ImageService extends \Engine\Service
 {
     public const IMAGE = 'Image';
 
-    public function getImage()
+    public function getImage($body, $jwtData)
     {
+        $rules = array (
+            'role' => REQUIRED . '|between:5,20'
+        );
+        $this->validator->validate($body, $rules);
+
         $imageModel = $this->loadModel(self::IMAGE);
-        return $imageModel->getImage('cd33917e01a089c09999521a01fbd4e2');
+        $userService = $this->loadService('User');
+        $userService->checkUserRole($body['role'], $jwtData);
+
+        return $imageModel->getRandomImage($body['role']);
+    }
+
+    public function showImage($body, $jwtData)
+    {
+        $rules = array (
+            'hash' => REQUIRED . '|between:5,100'
+        );
+        $this->validator->validate($body, $rules);
+
+        $imageModel = $this->loadModel(self::IMAGE);
+        $imageInfo = $imageModel->getImage($body['hash']);
+        if (empty($imageInfo[0])) {
+            throw new CustomException("There is no image with this name in our database.", 422);
+        }
+
+        $imageRole = $imageInfo[0]['role'];
+        $userService = $this->loadService('User');
+        $userService->checkUserRole($imageRole, $jwtData);
+
+        $file = $this->dir . "processed_images" . DIRECTORY_SEPARATOR . $body['hash'];
+        if (file_exists($file . '.png')) {
+            $image = file_get_contents($file . '.png');
+        } elseif (file_exists($file . '.jpg')) {
+            $image = file_get_contents($file . '.jpg');
+        } else {
+            throw new CustomException("There is no image with this name in our server.", 422);
+        }
+        if ($image === false) {
+            throw new CustomException("Error getting image.", 422);
+        }
+
+        return $image;
     }
 
     public function processAllImages($role)
