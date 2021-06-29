@@ -3,7 +3,7 @@ create schema image_app;
 create table image_app.image
 (
 	hash varchar(200) not null,
-	hole varchar(50) not null
+	role varchar(50) not null
 );
 
 create unique index image_hash_uindex
@@ -42,3 +42,15 @@ create table acl.user_role
 
 alter table acl.user_role
     owner to postgres;
+
+create table image_app.image_review
+(
+	image_hash varchar(200) not null
+		constraint image_review_image_hash_fk
+			references image_app.image,
+	user_email varchar(50) not null
+		constraint image_review_user_email_fk
+			references acl."user",
+	rating int not null,
+	created_at date default now()
+);

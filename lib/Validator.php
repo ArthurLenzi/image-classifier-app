@@ -69,7 +69,7 @@ class Validator
             } else {
                 $value = null;
             }
-            
+
             $separetedRules = explode("|", $field_rules);
             foreach ($separetedRules as $rule) {
                 // Does not validate subsequent rules if field is optional (and is not set) or nullable (and equal to null)
@@ -119,10 +119,10 @@ class Validator
             $to_return = $this->validateRegex($rule, $value, $field);
         } elseif (strpos($rule, 'date_equals') !== false) {
             $to_return = $this->validateDateEquals($rule, $value, $field);
-        } elseif (strpos($rule, 'date_format') !== false) {
-            $to_return = $this->validateDateFormat($rule, $value, $field);
         } elseif (strpos($rule, 'only_date_format') !== false) {
             $to_return = $this->validateOnlyDateFormat($rule, $value, $field);
+        } elseif (strpos($rule, 'date_format') !== false) {
+            $to_return = $this->validateDateFormat($rule, $value, $field);
         } elseif (strpos($rule, 'date_age_minor') !== false) {
             $to_return = $this->validateAgeMinor($value, $field);
         } elseif (strpos($rule, 'after_or_equal') !== false) {
@@ -181,7 +181,7 @@ class Validator
         }
         return true;
     }
-    
+
     public function validateDigits($rule, $value, $field)
     {
         $size = explode(":", $rule)[1];
@@ -301,7 +301,7 @@ class Validator
     {
         if (!array_key_exists($field, $data)) {
             $errMessage = "O campo " . $field . " é obrigatório e precisa ser informado.";
-            
+
             return array("valid" => false, "invalid_message" => $errMessage);
         }
         return true;
@@ -341,7 +341,7 @@ class Validator
 
             return array("valid" => false, "invalid_message" => $errMessage);
         }
-        
+
         return true;
     }
 
@@ -446,7 +446,6 @@ class Validator
         }
         return true;
     }
-    
 
     public function validateBeforeDate($rule, $value, $field)
     {

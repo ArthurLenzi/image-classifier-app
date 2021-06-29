@@ -30,4 +30,12 @@ class UserService extends \Engine\Service
 
         return "User created successfully";
     }
+
+    public function checkUserRole($role, $jwtData)
+    {
+        if (!in_array($role, $jwtData['roles'])) {
+            throw new CustomException("You don't have permissions in this role.", 422);
+        }
+        return true;
+    }
 }
